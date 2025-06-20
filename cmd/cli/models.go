@@ -89,7 +89,7 @@ func (c Config) Fs(args []string) (Command, error) {
 		// Command flag
 		cmdFs := flag.NewFlagSet(cmd.Name, flag.ExitOnError)
 
-		cmdUsage := fmt.Sprintf("\tDescription: %s \n \tCommand: %s", cmd.Cmd, cmd.Description)
+		cmdUsage := fmt.Sprintf("\tDescription: %s \n \tCommand: %s", cmd.Description, cmd.Cmd)
 
 		cmdFs.Usage = func() {
 			fmt.Fprintln(cmdFs.Output(), "Usage of", cmd.Name+":")

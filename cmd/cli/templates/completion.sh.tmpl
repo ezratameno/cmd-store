@@ -1,0 +1,21 @@
+#! /bin/bash
+
+
+_completions() {
+  local cur prev
+  COMPREPLY=()
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+  if [[ ${COMP_CWORD} -eq 1 ]]; then
+    COMPREPLY=( $(compgen -W "{{.DomainsStr}}" -- "$cur") )
+
+  {{ range .Domains }}
+  elif [[ ${COMP_WORDS[1]} == "${{.Name}}" ]]; then
+    COMPREPLY=( $(compgen -W "{{ .Cmds }}" -- "$cur") )
+  {{ end }}
+  fi
+}
+
+
+complete -F _completions {{.ProgramName}} 

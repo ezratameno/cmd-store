@@ -3,8 +3,10 @@ package main
 import (
 	"bytes"
 	"context"
+	"embed"
 	"flag"
 	"fmt"
+	"html/template"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -111,8 +113,79 @@ func run(ctx context.Context) error {
 	return nil
 }
 
+//go:embed templates
+var templateFile embed.FS
+
 // completion generates a completion script for the CLI.
 func completion(ctx context.Context, configs map[string]Config) error {
+	programPath, err := os.Executable()
+	if err != nil {
+		return fmt.Errorf("getting executable path: %w", err)
+	}
 
+	programPath = filepath.Base(programPath)
+
+	tmplFile := "templates/completion.sh.tmpl"
+
+	type Domain struct {
+		Name string
+		Cmds string
+	}
+	type TemplateData struct {
+		ProgramName string
+		Domains     []Domain
+		DomainsStr  string
+	}
+
+	var data TemplateData
+	data.ProgramName = programPath
+
+	for _, cfg := range configs {
+		var domain Domain
+		domain.Name = cfg.Domain
+		for _, cmd := range cfg.Commands {
+			domain.Cmds = fmt.Sprintf("%s %s", domain.Cmds, cmd.Name)
+		}
+		data.Domains = append(data.Domains, domain)
+
+		data.DomainsStr += fmt.Sprintf("%s ", cfg.Domain)
+	}
+
+	// funcMap := template.FuncMap{
+	// 	"join": strings.Join,
+	// }
+	tmpl, err := template.ParseFS(templateFile, tmplFile)
+	if err != nil {
+		return fmt.Errorf("parsing template file %s: %w", tmplFile, err)
+	}
+
+	err = tmpl.Execute(os.Stdout, data)
+	if err != nil {
+		return fmt.Errorf("executing template: %w", err)
+	}
+
+	// var buf bytes.Buffer
+	// var domains []string
+
+	// buf.WriteString("#! /bin/bash\n")
+	// for _, cfg := range configs {
+	// 	domains = append(domains, cfg.Domain)
+
+	// 	var cmds []string
+	// 	for _, cmd := range cfg.Commands {
+	// 		cmds = append(cmds, cmd.Name)
+	// 	}
+
+	// 	// Add the cmds to the completion script
+	// 	buf.WriteString(fmt.Sprintf("complete -W \"%s\" %s %s\n", strings.Join(cmds, " "), programPath, cfg.Domain))
+	// }
+
+	// // Add the domain commands to the completion script
+	// buf.WriteString(fmt.Sprintf("complete -W \"%s\" %s\n", strings.Join(domains, " "), programPath))
+
+	// // for _, cfg := range configs {
+
+	// // }
+	// fmt.Println(buf.String())
 	return nil
 }
