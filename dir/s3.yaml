@@ -1,3 +1,4 @@
+description: Configuration for S3 operations
 commands:
   - name: list-buckets
     cmd: echo "Listing S3 buckets"

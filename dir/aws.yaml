@@ -1,3 +1,4 @@
+description: AWS CLI commands
 commands:
   - name: pc
     cmd: echo "This is a placeholder for AWS commands"
@@ -5,3 +6,6 @@ commands:
   - name: list-buckets
     cmd: echo "Listing S3 buckets"
     description: List S3 buckets
+  - name: file
+    cmd: echo "This is a placeholder for file operations" > file.txt
+    description: "Placeholder command for file operations"

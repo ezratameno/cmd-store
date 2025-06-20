@@ -12,7 +12,8 @@ import (
 )
 
 type Config struct {
-	Commands []Command `yaml:"commands"`
+	Commands    []Command `yaml:"commands"`
+	Description string    `yaml:"description"`
 
 	// The name of the command, for example 'aws'.
 	Domain string
