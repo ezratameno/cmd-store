@@ -11,7 +11,7 @@ _completions() {
     COMPREPLY=( $(compgen -W "{{.DomainsStr}}" -- "$cur") )
 
   {{ range .Domains }}
-  elif [[ ${COMP_WORDS[1]} == "${{.Name}}" ]]; then
+  elif [[ "${COMP_WORDS[1]}" == "{{.Name}}" ]]; then
     COMPREPLY=( $(compgen -W "{{ .Cmds }}" -- "$cur") )
   {{ end }}
   fi

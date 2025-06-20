@@ -11,14 +11,14 @@ _completions() {
     COMPREPLY=( $(compgen -W "aws s3 " -- "$cur") )
 
   
-  elif [[ ${COMP_WORDS[1]} == "$aws" ]]; then
+  elif [[ "${COMP_WORDS[1]}" == "aws" ]]; then
     COMPREPLY=( $(compgen -W " pc list-buckets file" -- "$cur") )
   
-  elif [[ ${COMP_WORDS[1]} == "$s3" ]]; then
+  elif [[ "${COMP_WORDS[1]}" == "s3" ]]; then
     COMPREPLY=( $(compgen -W " list-buckets" -- "$cur") )
   
   fi
 }
 
 
-complete -F _completions ./cmd-store 
+complete -F _completions cmd-store 
