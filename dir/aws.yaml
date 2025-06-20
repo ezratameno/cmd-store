@@ -1,0 +1,7 @@
+commands:
+  - name: pc
+    cmd: echo "This is a placeholder for AWS commands"
+    description: "Placeholder command for AWS operations"
+  - name: list-buckets
+    cmd: echo "Listing S3 buckets"
+    description: List S3 buckets
