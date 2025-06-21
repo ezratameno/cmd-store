@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 var (
@@ -26,6 +27,11 @@ func main() {
 		os.Exit(1)
 	}
 }
+
+var (
+	versionCmd    = "version"
+	completionCmd = "completion"
+)
 
 func run(ctx context.Context) error {
 
@@ -147,6 +153,9 @@ var templateFile embed.FS
 
 // completion generates a completion script for the CLI.
 func completion(configsDir string, configs map[string]Config) error {
+
+	// =========================
+	// Get the program name from the executable path
 	programPath, err := os.Executable()
 	if err != nil {
 		return fmt.Errorf("getting executable path: %w", err)
@@ -154,6 +163,8 @@ func completion(configsDir string, configs map[string]Config) error {
 
 	programPath = filepath.Base(programPath)
 
+	// =========================
+	// Template for completion script
 	tmplFile := "templates/completion.sh.tmpl"
 
 	type Domain struct {
@@ -166,15 +177,21 @@ func completion(configsDir string, configs map[string]Config) error {
 		DomainsStr  string
 	}
 
+	// =========================
+
 	var data TemplateData
 	data.ProgramName = programPath
 
+	// ========================
+	// Prepare the domains for the template
 	for _, cfg := range configs {
 		var domain Domain
 		domain.Name = cfg.Domain
 		for _, cmd := range cfg.Commands {
 			domain.Cmds = fmt.Sprintf("%s %s", domain.Cmds, cmd.Name)
 		}
+
+		domain.Cmds = strings.TrimSpace(domain.Cmds)
 		data.Domains = append(data.Domains, domain)
 
 		data.DomainsStr += fmt.Sprintf("%s ", cfg.Domain)
@@ -192,6 +209,8 @@ func completion(configsDir string, configs map[string]Config) error {
 	}
 	defer file.Close()
 
+	data.DomainsStr = strings.TrimSpace(data.DomainsStr)
+
 	err = tmpl.Execute(file, data)
 	if err != nil {
 		return fmt.Errorf("executing template: %w", err)
@@ -206,28 +225,5 @@ func completion(configsDir string, configs map[string]Config) error {
 	fmt.Printf("\t\tsource %s\n", completionLoc)
 	fmt.Println("\tfi")
 
-	// var buf bytes.Buffer
-	// var domains []string
-
-	// buf.WriteString("#! /bin/bash\n")
-	// for _, cfg := range configs {
-	// 	domains = append(domains, cfg.Domain)
-
-	// 	var cmds []string
-	// 	for _, cmd := range cfg.Commands {
-	// 		cmds = append(cmds, cmd.Name)
-	// 	}
-
-	// 	// Add the cmds to the completion script
-	// 	buf.WriteString(fmt.Sprintf("complete -W \"%s\" %s %s\n", strings.Join(cmds, " "), programPath, cfg.Domain))
-	// }
-
-	// // Add the domain commands to the completion script
-	// buf.WriteString(fmt.Sprintf("complete -W \"%s\" %s\n", strings.Join(domains, " "), programPath))
-
-	// // for _, cfg := range configs {
-
-	// // }
-	// fmt.Println(buf.String())
 	return nil
 }
