@@ -12,9 +12,11 @@ import (
 	"path/filepath"
 )
 
-var version = "dev"
-var commit = "unknown"
-var date = "unknown"
+var (
+	Version = "dev"
+	Commit  = "unknown"
+	Date    = "unknown"
+)
 
 func main() {
 	ctx := context.Background()
@@ -76,6 +78,7 @@ func run(ctx context.Context) error {
 	var usageBuf bytes.Buffer
 
 	usageBuf.WriteString(fmt.Sprintf("\t%s: %s\n", "completion", "Generate completion script for the CLI"))
+	usageBuf.WriteString(fmt.Sprintf("\t%s: %s\n", "version", "Show the CLI version, commit, and date"))
 	for _, cfg := range configs {
 		// Short usage for the domain
 		domainUsage := fmt.Sprintf("\t%s: %s", cfg.Domain, cfg.Description)
@@ -94,9 +97,9 @@ func run(ctx context.Context) error {
 
 	switch os.Args[1] {
 	case "version":
-		fmt.Println("CLI Version:", version)
-		fmt.Println("Commit:", commit)
-		fmt.Println("Date:", date)
+		fmt.Println("CLI Version:", Version)
+		fmt.Println("Commit:", Commit)
+		fmt.Println("Date:", Date)
 	case "completion":
 		err = completion(configsDir, configs)
 		if err != nil {

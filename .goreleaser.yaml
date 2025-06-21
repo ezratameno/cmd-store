@@ -18,9 +18,10 @@ builds:
       - amd64
     ldflags:
       - >
-        -s -w -X github.com/ezratameno/cmd-store/cmd/cli.version={{ .Env.Version }}
-        -X github.com/ezratameno/cmd-store/cmd/cli.commit={{ .Env.Commit }}
-        -X github.com/ezratameno/cmd-store/cmd/cli.date={{ .Env.Date }}"
+        -s -w
+        -X main.Version={{ .Env.Version }}
+        -X main.Commit={{ .Env.Commit }}
+        -X main.Date={{ .Env.Date }}
     env:
       - CGO_ENABLED=0
 
