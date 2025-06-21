@@ -27,9 +27,20 @@ func run(ctx context.Context) error {
 		return fmt.Errorf("no command provided")
 	}
 
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return fmt.Errorf("getting user home directory: %w", err)
+	}
+
+	configsDir := filepath.Join(home, ".cmd-store")
+
+	if _, err := os.Stat(configsDir); os.IsNotExist(err) {
+		return fmt.Errorf("configs directory does not exist: %s", configsDir)
+	}
+
 	// Read configs from the directory
 	configs := make(map[string]Config)
-	err := filepath.WalkDir("dir", func(path string, d os.DirEntry, err error) error {
+	err = filepath.WalkDir(configsDir, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -79,7 +90,7 @@ func run(ctx context.Context) error {
 
 	switch os.Args[1] {
 	case "completion":
-		err = completion(ctx, configs)
+		err = completion(configsDir, configs)
 		if err != nil {
 			return fmt.Errorf("generating completion script: %w", err)
 		}
@@ -92,9 +103,16 @@ func run(ctx context.Context) error {
 
 		args := os.Args[2:]
 
-		command, err := cfg.Fs(args)
+		command, opts, err := cfg.Fs(args)
 		if err != nil {
 			return fmt.Errorf("getting command from config: %w", err)
+		}
+
+		if opts.DryMode {
+			// If dry mode is enabled, print the command and return
+			fmt.Println("Dry run mode enabled. Command will not be executed.")
+			fmt.Printf("Command: %s\n", command.Cmd)
+			return nil
 		}
 
 		// Execute the command
@@ -117,7 +135,7 @@ func run(ctx context.Context) error {
 var templateFile embed.FS
 
 // completion generates a completion script for the CLI.
-func completion(ctx context.Context, configs map[string]Config) error {
+func completion(configsDir string, configs map[string]Config) error {
 	programPath, err := os.Executable()
 	if err != nil {
 		return fmt.Errorf("getting executable path: %w", err)
@@ -151,18 +169,31 @@ func completion(ctx context.Context, configs map[string]Config) error {
 		data.DomainsStr += fmt.Sprintf("%s ", cfg.Domain)
 	}
 
-	// funcMap := template.FuncMap{
-	// 	"join": strings.Join,
-	// }
 	tmpl, err := template.ParseFS(templateFile, tmplFile)
 	if err != nil {
 		return fmt.Errorf("parsing template file %s: %w", tmplFile, err)
 	}
 
-	err = tmpl.Execute(os.Stdout, data)
+	completionLoc := filepath.Join(configsDir, "cmd-store-completion.sh")
+	file, err := os.Create(completionLoc)
+	if err != nil {
+		return fmt.Errorf("creating completion file %s: %w", completionLoc, err)
+	}
+	defer file.Close()
+
+	err = tmpl.Execute(file, data)
 	if err != nil {
 		return fmt.Errorf("executing template: %w", err)
 	}
+
+	fmt.Println("Completion script generated at:", completionLoc)
+	fmt.Println("To enable completion for the current shell, run:")
+	fmt.Printf("\tsource %s\n", completionLoc)
+
+	fmt.Println("You can also add the following line to your shell configuration file (e.g., ~/.bashrc or ~/.zshrc):")
+	fmt.Printf("\tif [ -f %s ]; then\n", completionLoc)
+	fmt.Printf("\t\tsource %s\n", completionLoc)
+	fmt.Println("\tfi")
 
 	// var buf bytes.Buffer
 	// var domains []string

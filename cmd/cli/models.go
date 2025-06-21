@@ -47,9 +47,13 @@ func readConfig(path string) (Config, error) {
 	return config, nil
 }
 
+type CommandOpts struct {
+	DryMode bool // If true, the command will not be executed, but only printed
+}
+
 // Fs creates a flag set for the given config and parses the arguments.
 // And return the command to execute
-func (c Config) Fs(args []string) (Command, error) {
+func (c Config) Fs(args []string) (Command, CommandOpts, error) {
 	domainFs := flag.NewFlagSet(c.Domain, flag.ExitOnError)
 
 	// Register the available commands in the usage function
@@ -76,7 +80,7 @@ func (c Config) Fs(args []string) (Command, error) {
 	// Check for sub commands
 
 	if len(args) < 1 {
-		return Command{}, fmt.Errorf("no command provided")
+		return Command{}, CommandOpts{}, fmt.Errorf("no command provided")
 	}
 
 	for _, cmd := range c.Commands {
@@ -85,9 +89,13 @@ func (c Config) Fs(args []string) (Command, error) {
 			continue
 		}
 
+		var commandOpts CommandOpts
+
 		// =============================
 		// Command flag
 		cmdFs := flag.NewFlagSet(cmd.Name, flag.ExitOnError)
+
+		cmdFs.BoolVar(&commandOpts.DryMode, "dry-run", false, "If true, the command will not be executed, but only printed")
 
 		cmdUsage := fmt.Sprintf("\tDescription: %s \n \tCommand: %s", cmd.Description, cmd.Cmd)
 
@@ -99,10 +107,10 @@ func (c Config) Fs(args []string) (Command, error) {
 
 		cmdFs.Parse(args[1:])
 
-		return cmd, nil
+		return cmd, commandOpts, nil
 
 	}
 
-	return Command{}, fmt.Errorf("unknown command: %s", args[0])
+	return Command{}, CommandOpts{}, fmt.Errorf("unknown command: %s", args[0])
 
 }

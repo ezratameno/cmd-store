@@ -2,4 +2,4 @@ run:
 	go run ./cmd/cli/
 
 build:
-	go build -o cmd-store ./cmd/cli/ 
+	go build -o bin/cmd-store ./cmd/cli/ 
