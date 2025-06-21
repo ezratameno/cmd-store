@@ -36,3 +36,22 @@ description: A friendly explanation of what the command does.
 `cmd-store <domain> <command-name>`
 
 For example: `cmd-store aws pc`
+
+
+## 📦 Downloading the Latest Release
+
+To get the latest version of `cmd-store`, head over to the [Releases page](https://github.com/ezratameno/cmd-store/releases/latest) on GitHub.
+
+1. Click on the latest release tag.
+2. Under **Assets**, download the appropriate file for your system (e.g., `.zip`, `.tar.gz`, or binary).
+3. Extract or install it according to your platform's requirements.
+
+Alternatively, you can use `curl` or `wget` to download directly from the command line if a binary is available:
+
+```bash
+wget https://github.com/ezratameno/cmd-store/releases/latest/download/cmd_store_linux_amd64.tar.gz
+
+tar -xzf  cmd_store_linux_amd64.tar.gz
+chmod +x cmd-store
+sudo mv ./cmd-store /usr/local/bin/cmd-store
+```
