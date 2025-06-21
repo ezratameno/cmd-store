@@ -55,3 +55,15 @@ tar -xzf  cmd_store_linux_amd64.tar.gz
 chmod +x cmd-store
 sudo mv ./cmd-store /usr/local/bin/cmd-store
 ```
+
+
+## 🧩 Shell Completion
+
+`cmd-store` supports shell autocompletion to make your workflow smoother and faster.
+
+You can generate a completion script using:
+
+```bash
+cmd-store completion
+```
+> Note: You’ll need to re-run this command any time you add a new domain or command to update the completions.

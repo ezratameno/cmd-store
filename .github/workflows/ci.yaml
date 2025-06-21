@@ -32,6 +32,11 @@ jobs:
         run: |
           git fetch --tags
           git checkout ${{ steps.tag_version.outputs.new_tag }}
+      
+      - name: date
+        id: date
+        run: |
+          echo "date=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
@@ -42,4 +47,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           Version: ${{ steps.tag_version.outputs.new_tag }}
           Commit: ${{ github.sha }}
-          Date: ${{ github.event.pull_request.merged_at || github.event.pull_request.updated_at || github.event.pull_request.created_at }}
+          Date: ${{ steps.date.outputs.date }}

@@ -28,11 +28,6 @@ func main() {
 	}
 }
 
-var (
-	versionCmd    = "version"
-	completionCmd = "completion"
-)
-
 func run(ctx context.Context) error {
 
 	if len(os.Args) < 2 {
@@ -83,7 +78,7 @@ func run(ctx context.Context) error {
 
 	var usageBuf bytes.Buffer
 
-	usageBuf.WriteString(fmt.Sprintf("\t%s: %s\n", "completion", "Generate completion script for the CLI"))
+	usageBuf.WriteString(fmt.Sprintf("\t%s: %s\n", "completion", "Generate completion script for the CLI, this will need to re-run after adding a new domain or command"))
 	usageBuf.WriteString(fmt.Sprintf("\t%s: %s\n", "version", "Show the CLI version, commit, and date"))
 	for _, cfg := range configs {
 		// Short usage for the domain
