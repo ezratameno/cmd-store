@@ -12,6 +12,10 @@ import (
 	"path/filepath"
 )
 
+var version = "dev"
+var commit = "unknown"
+var date = "unknown"
+
 func main() {
 	ctx := context.Background()
 	err := run(ctx)
@@ -89,6 +93,10 @@ func run(ctx context.Context) error {
 	// ========================
 
 	switch os.Args[1] {
+	case "version":
+		fmt.Println("CLI Version:", version)
+		fmt.Println("Commit:", commit)
+		fmt.Println("Date:", date)
 	case "completion":
 		err = completion(configsDir, configs)
 		if err != nil {
