@@ -10,7 +10,7 @@ before:
 
 builds:
   - id: cmd-store
-    main: ./cmd/store/main.go
+    main: ./cmd/cli/
     binary: cmd-store
     goos:
       - linux
@@ -18,7 +18,9 @@ builds:
       - amd64
     ldflags:
       - >
-        "-s -w -X github.com/ezratameno/cmd-store/cmd/cli.version={{ .Env.Version }} -X github.com/ezratameno/cmd-store/cmd/cli.commit={{ .Env.Commit }} -X github.com/ezratameno/cmd-store/cmd/cli.date={{ .Env.Date }}"
+        -s -w -X github.com/ezratameno/cmd-store/cmd/cli.version={{ .Env.Version }}
+        -X github.com/ezratameno/cmd-store/cmd/cli.commit={{ .Env.Commit }}
+        -X github.com/ezratameno/cmd-store/cmd/cli.date={{ .Env.Date }}"
     env:
       - CGO_ENABLED=0
 
@@ -28,7 +30,7 @@ archives:
     - cmd-store
     format: tar.gz
     name_template: >-
-      cmd_store_{{- .OS} }}_{{- .Arch }}
+      cmd_store_{{- .Os }}_{{- .Arch }}
     format_overrides:
       - goos: windows
         format: zip
