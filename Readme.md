@@ -7,6 +7,24 @@ A lightweight tool to organize and execute domain-based Bash commands.
 All configurations are stored under: `~/.cmd-store`
 
 
+## 🗂️ Folder Structure
+
+All domain-specific command configurations are stored in the `~/.cmd-store` directory as separate `.yaml` files. Each file represents a domain and includes the commands relevant to that domain.
+
+### Example
+``` bash
+├── ~/.cmd-store
+│   ├── aws.yaml
+│   ├── docker.yaml
+
+```
+
+- `aws.yaml`: Contains AWS CLI-related shortcuts.
+- `docker.yaml`: Stores shortcuts for Docker commands.
+
+Each of these files follows the configuration format described in the [Configuration Structure](#-configuration-structure) section above.
+
+> You can add or remove domains by simply adding or deleting YAML files in this directory.
 
 
 ## 🛠️ Configuration Structure
